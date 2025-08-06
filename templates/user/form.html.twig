@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Collecte de données client{% endblock %}
+
+{% block body %}
+<div class="main-center">
+<div class="form-container">
+    {# Sélecteur de langue injecté par JS #}
+    <h2 style="text-align:center; font-weight:700; margin-bottom:2rem; letter-spacing:0.01em; color:#6366f1;">Collecte de données client</h2>
+    {% if errors is defined and errors|length > 0 %}
+        <div class="error-message">
+            <ul style="margin:0; padding-left:1.2em;">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if success is defined and success %}
+        <div class="success-message" style="margin-bottom:2.5rem;">
+            <div>
+                <div style="font-size:1.15em; font-weight:600; margin-bottom:0.5em;">Enregistrement réussi !</div>
+                <ul style="list-style:none; padding:0; margin:0;">
+                    <li><b>Nom complet :</b> {{ user.fullname|e }}</li>
+                    <li><b>Email :</b> {{ user.email|e }}</li>
+                    <li><b>Téléphone :</b> {{ user.phone|e }}</li>
+                    <li><b>Date de naissance :</b> {{ user.birthdate|e }}</li>
+                    <li><b>Adresse :</b> {{ user.address|e }}</li>
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+    <form id="user-form" method="post" autocomplete="off">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <div class="form-group">
+            <span class="input-icon">{# User SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 2.7-6 6-6h4c3.3 0 6 2.7 6 6"/></svg></span>
+            <input type="text" id="fullname" name="fullname" placeholder="Entrez le nom complet" value="{{ user.fullname|e }}" required minlength="3" maxlength="50">
+        </div>
+        <div class="form-group">
+            <span class="input-icon">{# Email SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg></span>
+            <input type="email" id="email" name="email" placeholder="Entrez l'adresse email" value="{{ user.email|e }}" required>
+        </div>
+        <div class="form-group">
+            <span class="input-icon">{# Phone SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M4 4h5l2 7-4 2c1.5 2.5 4.5 5.5 7 7l2-4 7 2v5c0 1-1 2-2 2C7 22 2 17 2 6c0-1 1-2 2-2z"/></svg></span>
+            <input type="text" id="phone" name="phone" placeholder="Entrez le numéro de téléphone" value="{{ user.phone|e }}" required pattern="[0-9]{9,12}">
+        </div>
+        <div class="form-group">
+            <span class="input-icon">{# Calendar SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 9h18"/></svg></span>
+            <input type="date" id="birthdate" name="birthdate" placeholder="Sélectionnez la date de naissance" value="{{ user.birthdate|e }}" required max="{{ "now"|date('Y-m-d') }}">
+        </div>
+        <div class="form-group" id="address-group" style="margin-bottom:2.2rem;">
+            <span class="input-icon">{# MapPin SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M12 21s-6-5.2-6-10A6 6 0 0 1 18 11c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.5"/></svg></span>
+            <input type="text" id="address" name="address" placeholder="Commencez à taper pour rechercher une adresse" value="{{ user.address|e }}" required autocomplete="off">
+            <div id="address-suggestions"></div>
+        </div>
+        <button type="submit">Enregistrer</button>
+    </form>
+</div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/style.css">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="/script.js"></script>
+{% endblock %} 
