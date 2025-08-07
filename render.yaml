@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: symfony_form
+    runtime: php
+    plan: free
+    buildCommand: composer install --no-dev --optimize-autoloader
+    startCommand: php -S 0.0.0.0:$PORT -t public
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_DEBUG
+        value: false
+      - key: DATABASE_URL
+        value: sqlite:///%kernel.project_dir%/var/data.db
+      - key: APP_SECRET
+        generateValue: true
