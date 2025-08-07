@@ -64,7 +64,8 @@ function validateForm(event) {
   }
 
   if (valid) {
-    showSuccess();
+    // Si la validation côté client passe, soumettre le formulaire au serveur
+    event.target.submit();
   }
 }
 
@@ -79,39 +80,7 @@ function clearErrors() {
   document.querySelectorAll('.error-message').forEach(e => e.remove());
 }
 
-function showSuccess() {
-  // Créer le message de succès
-  let success = document.createElement('div');
-  success.className = 'success-message';
-  success.innerHTML = `
-    <div>
-      <div style="font-size:1.15em; font-weight:600; margin-bottom:0.5em;">Enregistrement réussi !</div>
-      <ul style="list-style:none; padding:0; margin:0;">
-        <li><b>Nom complet :</b> ${document.getElementById('fullname').value}</li>
-        <li><b>Email :</b> ${document.getElementById('email').value}</li>
-        <li><b>Téléphone :</b> ${document.getElementById('phone').value}</li>
-        <li><b>Date de naissance :</b> ${document.getElementById('birthdate').value}</li>
-        <li><b>Adresse :</b> ${document.getElementById('address').value}</li>
-      </ul>
-    </div>
-  `;
-  
-  // Ajouter le message au début du formulaire
-  const form = document.getElementById('user-form');
-  form.parentNode.insertBefore(success, form);
-  
-  // Vider tous les champs après l'enregistrement réussi
-  document.getElementById('fullname').value = '';
-  document.getElementById('email').value = '';
-  document.getElementById('phone').value = '';
-  document.getElementById('birthdate').value = '';
-  document.getElementById('address').value = '';
-  
-  // Masquer le message de succès après 5 secondes
-  setTimeout(() => {
-    success.remove();
-  }, 5000);
-}
+// La fonction showSuccess() a été supprimée car le succès est géré côté serveur
 
 // Autocomplete adresse avec OpenStreetMap (Photon)
 function setupAddressAutocomplete() {
@@ -261,6 +230,96 @@ document.addEventListener('keydown', function(e) {
     focused.click();
   }
 });
+
+// Fonction pour basculer l'affichage de la liste des utilisateurs
+function toggleUserList() {
+  const listSection = document.getElementById('user-list-section');
+  const listBtn = document.getElementById('list-btn');
+  
+  if (listSection.style.display === 'none') {
+    // Afficher la liste
+    listSection.style.display = 'block';
+    listBtn.textContent = 'Masquer';
+    listBtn.style.background = '#dc2626';
+    loadUserList();
+    
+    // Scroll vers la liste
+    listSection.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    // Masquer la liste
+    listSection.style.display = 'none';
+    listBtn.textContent = 'Liste';
+    listBtn.style.background = '#059669';
+  }
+}
+
+// Fonction pour charger la liste des utilisateurs
+function loadUserList() {
+  const loading = document.getElementById('loading');
+  const container = document.getElementById('user-table-container');
+  
+  loading.style.display = 'block';
+  container.innerHTML = '';
+  
+  fetch('/users')
+    .then(response => response.json())
+    .then(data => {
+      loading.style.display = 'none';
+      
+      if (data.success && data.data && data.data.length > 0) {
+        displayUserTable(data.data);
+      } else {
+        container.innerHTML = '<p style="text-align: center; color: #6b7280;">Aucun enregistrement trouvé.</p>';
+      }
+    })
+    .catch(error => {
+      loading.style.display = 'none';
+      container.innerHTML = '<p style="text-align: center; color: #dc2626;">Erreur lors du chargement des données.</p>';
+      console.error('Erreur:', error);
+    });
+}
+
+// Fonction pour afficher le tableau des utilisateurs
+function displayUserTable(users) {
+  const container = document.getElementById('user-table-container');
+  let tableHTML = `
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; margin: 1rem 0; background: white; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 4px 12px -2px rgba(99,102,241,0.10); color: #22223b; font-size: 1rem;">
+        <thead>
+          <tr style="background: #6366f1; color: #fff;">
+            <th style="padding: 1.1rem 1.2rem; text-align: left; font-weight: 700; border-bottom: 2px solid #cbd5e1;">ID</th>
+            <th style="padding: 1.1rem 1.2rem; text-align: left; font-weight: 700; border-bottom: 2px solid #cbd5e1;">Nom complet</th>
+            <th style="padding: 1.1rem 1.2rem; text-align: left; font-weight: 700; border-bottom: 2px solid #cbd5e1;">Email</th>
+            <th style="padding: 1.1rem 1.2rem; text-align: left; font-weight: 700; border-bottom: 2px solid #cbd5e1;">Téléphone</th>
+            <th style="padding: 1.1rem 1.2rem; text-align: left; font-weight: 700; border-bottom: 2px solid #cbd5e1;">Date de naissance</th>
+            <th style="padding: 1.1rem 1.2rem; text-align: left; font-weight: 700; border-bottom: 2px solid #cbd5e1;">Adresse</th>
+            <th style="padding: 1.1rem 1.2rem; text-align: left; font-weight: 700; border-bottom: 2px solid #cbd5e1;">Date création</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+  users.forEach((user, index) => {
+    const rowColor = index % 2 === 0 ? '#fff' : '#f1f5f9';
+    tableHTML += `
+      <tr style="background: ${rowColor}; transition: background 0.2s;" onmouseover="this.style.background='#e0e7ff'" onmouseout="this.style.background='${rowColor}'">
+        <td style="padding: 1rem 1.2rem; border-bottom: 1px solid #cbd5e1;">${user.id}</td>
+        <td style="padding: 1rem 1.2rem; border-bottom: 1px solid #cbd5e1; font-weight: 600;">${user.fullname}</td>
+        <td style="padding: 1rem 1.2rem; border-bottom: 1px solid #cbd5e1;">${user.email}</td>
+        <td style="padding: 1rem 1.2rem; border-bottom: 1px solid #cbd5e1;">${user.phone}</td>
+        <td style="padding: 1rem 1.2rem; border-bottom: 1px solid #cbd5e1;">${user.birthdate || 'N/A'}</td>
+        <td style="padding: 1rem 1.2rem; border-bottom: 1px solid #cbd5e1; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${user.address}">${user.address}</td>
+        <td style="padding: 1rem 1.2rem; border-bottom: 1px solid #cbd5e1;">${user.created_at || 'N/A'}</td>
+      </tr>
+    `;
+  });
+  tableHTML += `
+        </tbody>
+      </table>
+    </div>
+    <p style="text-align: center; color: #6366f1; margin-top: 1rem; font-weight: 600;">Total: ${users.length} enregistrement(s)</p>
+  `;
+  container.innerHTML = tableHTML;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   setThemeByHour();

@@ -7,6 +7,7 @@
 <div class="form-container">
     {# Sélecteur de langue injecté par JS #}
     <h2 style="text-align:center; font-weight:700; margin-bottom:2rem; letter-spacing:0.01em; color:#6366f1;">Collecte de données client</h2>
+    
     {% if errors is defined and errors|length > 0 %}
         <div class="error-message">
             <ul style="margin:0; padding-left:1.2em;">
@@ -16,46 +17,131 @@
             </ul>
         </div>
     {% endif %}
+    
     {% if success is defined and success %}
         <div class="success-message" style="margin-bottom:2.5rem;">
-            <div>
-                <div style="font-size:1.15em; font-weight:600; margin-bottom:0.5em;">Enregistrement réussi !</div>
-                <ul style="list-style:none; padding:0; margin:0;">
-                    <li><b>Nom complet :</b> {{ user.fullname|e }}</li>
-                    <li><b>Email :</b> {{ user.email|e }}</li>
-                    <li><b>Téléphone :</b> {{ user.phone|e }}</li>
-                    <li><b>Date de naissance :</b> {{ user.birthdate|e }}</li>
-                    <li><b>Adresse :</b> {{ user.address|e }}</li>
-                </ul>
+            <div style="font-size:1.15em; font-weight:600; text-align:center;">
+                Enregistrement réussi !
             </div>
         </div>
     {% endif %}
+    
+
+    
     <form id="user-form" method="post" autocomplete="off">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        
         <div class="form-group">
-            <span class="input-icon">{# User SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.3 2.7-6 6-6h4c3.3 0 6 2.7 6 6"/></svg></span>
-            <input type="text" id="fullname" name="fullname" placeholder="Entrez le nom complet" value="{{ user.fullname|e }}" required minlength="3" maxlength="50">
+            <span class="input-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-3.3 2.7-6 6-6h4c3.3 0 6 2.7 6 6"/>
+                </svg>
+            </span>
+            <input type="text" 
+                   id="fullname" 
+                   name="fullname" 
+                   placeholder="Entrez le nom complet" 
+                   value="{{ user.fullname|default('')|e }}" 
+                   required 
+                   minlength="3" 
+                   maxlength="50">
         </div>
+        
         <div class="form-group">
-            <span class="input-icon">{# Email SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg></span>
-            <input type="email" id="email" name="email" placeholder="Entrez l'adresse email" value="{{ user.email|e }}" required>
+            <span class="input-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+                    <rect x="3" y="5" width="18" height="14" rx="3"/>
+                    <path d="M3 7l9 6 9-6"/>
+                </svg>
+            </span>
+            <input type="email" 
+                   id="email" 
+                   name="email" 
+                   placeholder="Entrez l'adresse email" 
+                   value="{{ user.email|default('')|e }}" 
+                   required>
         </div>
+        
         <div class="form-group">
-            <span class="input-icon">{# Phone SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M4 4h5l2 7-4 2c1.5 2.5 4.5 5.5 7 7l2-4 7 2v5c0 1-1 2-2 2C7 22 2 17 2 6c0-1 1-2 2-2z"/></svg></span>
-            <input type="text" id="phone" name="phone" placeholder="Entrez le numéro de téléphone" value="{{ user.phone|e }}" required pattern="[0-9]{9,12}">
+            <span class="input-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+                    <path d="M4 4h5l2 7-4 2c1.5 2.5 4.5 5.5 7 7l2-4 7 2v5c0 1-1 2-2 2C7 22 2 17 2 6c0-1 1-2 2-2z"/>
+                </svg>
+            </span>
+            <input type="text" 
+                   id="phone" 
+                   name="phone" 
+                   placeholder="Entrez le numéro de téléphone" 
+                   value="{{ user.phone|default('')|e }}" 
+                   required 
+                   pattern="[0-9]{9,12}">
         </div>
+        
         <div class="form-group">
-            <span class="input-icon">{# Calendar SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 9h18"/></svg></span>
-            <input type="date" id="birthdate" name="birthdate" placeholder="Sélectionnez la date de naissance" value="{{ user.birthdate|e }}" required max="{{ "now"|date('Y-m-d') }}">
+            <span class="input-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+                    <rect x="3" y="5" width="18" height="16" rx="2"/>
+                    <path d="M16 3v4M8 3v4M3 9h18"/>
+                </svg>
+            </span>
+            <input type="date" 
+                   id="birthdate" 
+                   name="birthdate" 
+                   placeholder="Sélectionnez la date de naissance" 
+                   value="{{ user.birthdate ? user.birthdate|date('Y-m-d') : '' }}" 
+                   required 
+                   max="{{ "now"|date('Y-m-d') }}">
         </div>
+        
         <div class="form-group" id="address-group" style="margin-bottom:2.2rem;">
-            <span class="input-icon">{# MapPin SVG #}<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M12 21s-6-5.2-6-10A6 6 0 0 1 18 11c0 4.8-6 10-6 10z"/><circle cx="12" cy="11" r="2.5"/></svg></span>
-            <input type="text" id="address" name="address" placeholder="Commencez à taper pour rechercher une adresse" value="{{ user.address|e }}" required autocomplete="off">
+            <span class="input-icon">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+                    <path d="M12 21s-6-5.2-6-10A6 6 0 0 1 18 11c0 4.8-6 10-6 10z"/>
+                    <circle cx="12" cy="11" r="2.5"/>
+                </svg>
+            </span>
+            <input type="text" 
+                   id="address" 
+                   name="address" 
+                   placeholder="Commencez à taper pour rechercher une adresse" 
+                   value="{{ user.address|default('')|e }}" 
+                   required 
+                   autocomplete="off">
             <div id="address-suggestions"></div>
         </div>
-        <button type="submit">Enregistrer</button>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <button type="submit">Enregistrer</button>
+            <!-- <button type="button" id="list-btn" onclick="toggleUserList()" style="background: #059669; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s;">Liste</button> -->
+        </div>
     </form>
 </div>
+
+{# Section pour afficher la liste des utilisateurs #}
+<div id="user-list-section" style="display: none; margin-top: 2rem; width: 100%;">
+    <div class="form-container" style="width: 100%; max-width: none;">
+        <h2 style="text-align:center; font-weight:700; margin-bottom:2rem; letter-spacing:0.01em; color:#6366f1;">Liste des enregistrements</h2>
+        <div id="loading" style="text-align: center; display: none;">
+            <p>Chargement...</p>
+        </div>
+        <div id="user-table-container">
+            <!-- Le tableau sera inséré ici par JavaScript -->
+        </div>
+        <div style="text-align: center; margin-top: 1rem;">
+            <button type="button" onclick="toggleUserList()" style="background: #dc2626; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">Fermer</button>
+        </div>
+    </div>
+</div>
+</div>
+
+{# Liens de test pour le débogage #}
+<div style="position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 12px;">
+    <div style="margin-bottom: 5px;"><strong>Tests de diagnostic :</strong></div>
+    <a href="/test-connection" target="_blank" style="color: #4ade80; display: block;">Test connexion DB</a>
+    <a href="/test-form-data" target="_blank" style="color: #4ade80; display: block;">Test données formulaire</a>
+    <a href="/test-db" target="_blank" style="color: #4ade80; display: block;">Test base de données</a>
+    <a href="/users" target="_blank" style="color: #4ade80; display: block;">Voir utilisateurs</a>
 </div>
 {% endblock %}
 
@@ -65,4 +151,4 @@
 
 {% block javascripts %}
     <script src="/script.js"></script>
-{% endblock %} 
+{% endblock %}
